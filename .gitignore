@@ -1,0 +1,9 @@
+# Bỏ 2 file Jupyter Notebook
+eval_kaggle.ipynb
+train_kaggle.ipynb
+
+# Bỏ file train.py
+train.py
+
+# Bỏ folder infer
+infer.py
