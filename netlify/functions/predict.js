@@ -2,7 +2,7 @@ const apiUrl = process.env.MODEL_API_URL;  // URL của Flask server
 const apiKey = process.env.MODEL_API_KEY;  // API key nếu cần thiết
 const FormData = require('form-data');
 
-exports.handler = async (event, context) => {
+exports.predict = async (event, context) => {
     if (event.httpMethod !== 'POST') {
         return {
             statusCode: 405,
@@ -19,9 +19,11 @@ exports.handler = async (event, context) => {
 
     try {
         const { image } = JSON.parse(event.body); // Expecting `image` in the request body
+        console.log("Incoming request body:", event.body); // log dữ liệu nhận được
+
         const formData = new FormData();
         formData.append('image', image);  // Đảm bảo dữ liệu gửi là file ảnh
-
+        
         const response = await fetch(`${apiUrl}/predict`, {
             method: 'POST',
             headers: {
@@ -29,6 +31,8 @@ exports.handler = async (event, context) => {
             },
             body: formData,
         });
+
+        console.log("Flask API response:", response); // log toàn bộ response từ Flask API
 
         if (!response.ok) {
             throw new Error(`API responded with status ${response.status}`);
