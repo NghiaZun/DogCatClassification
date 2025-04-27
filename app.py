@@ -7,7 +7,7 @@ from model_arch import CatDogClassifier
 
 app = Flask(__name__)
 
-device = 'cuda' if torch.cuda.is_available() else 'cpu'
+device = 'cpu'
 
 transform = transforms.Compose([
     transforms.Resize(256),
