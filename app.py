@@ -34,7 +34,14 @@ def load_model():
 def predict():
     load_model()
 
+    # Kiểm tra và lấy file hình ảnh từ yêu cầu
+    if 'image' not in request.files:
+        return jsonify({'error': 'No image file part'}), 400
+
     img_file = request.files['image']
+    if img_file.filename == '':
+        return jsonify({'error': 'No selected file'}), 400
+
     img = Image.open(img_file.stream).convert('RGB')
     img = transform(img).unsqueeze(0).to(device)
 

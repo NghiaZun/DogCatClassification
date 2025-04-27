@@ -1,5 +1,5 @@
-const apiUrl = process.env.MODEL_API_URL;
-const apiKey = process.env.MODEL_API_KEY;
+const apiUrl = process.env.MODEL_API_URL;  // URL của Flask server
+const apiKey = process.env.MODEL_API_KEY;  // API key nếu cần thiết
 const FormData = require('form-data');
 
 exports.handler = async (event, context) => {
@@ -10,7 +10,7 @@ exports.handler = async (event, context) => {
         };
     }
 
-    if (!apiUrl || !apiKey) {
+    if (!apiUrl) {
         return {
             statusCode: 500,
             body: JSON.stringify({ error: 'API configuration is missing' })
@@ -20,13 +20,12 @@ exports.handler = async (event, context) => {
     try {
         const { image } = JSON.parse(event.body); // Expecting `image` in the request body
         const formData = new FormData();
-        formData.append('file', image);
+        formData.append('image', image);  // Đảm bảo dữ liệu gửi là file ảnh
 
         const response = await fetch(`${apiUrl}/predict`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${apiKey}`,
-                // `fetch` will automatically set the correct Content-Type for FormData
             },
             body: formData,
         });
