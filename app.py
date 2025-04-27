@@ -34,23 +34,24 @@ def load_model():
 def predict():
     load_model()
 
-    # Kiểm tra và lấy file hình ảnh từ yêu cầu
-    if 'image' not in request.files:
-        return jsonify({'error': 'No image file part'}), 400
-
     img_file = request.files['image']
-    if img_file.filename == '':
-        return jsonify({'error': 'No selected file'}), 400
+    print("Received image:", img_file.filename)  # Log để kiểm tra
+    
+    try:
+        img = Image.open(img_file.stream).convert('RGB')
+        img = transform(img).unsqueeze(0).to(device)
 
-    img = Image.open(img_file.stream).convert('RGB')
-    img = transform(img).unsqueeze(0).to(device)
+        with torch.no_grad():
+            output = model(img)
+            pred = torch.sigmoid(output).item()
+            label = "Dog" if pred > 0.5 else "Cat"
 
-    with torch.no_grad():
-        output = model(img)
-        pred = torch.sigmoid(output).item()
-        label = "Dog" if pred > 0.5 else "Cat"
+        print("Prediction:", label)  # Log kết quả
 
-    return jsonify({'label': label})
+        return jsonify({'label': label})
+    except Exception as e:
+        print(f"Error: {str(e)}")  # Log chi tiết lỗi
+        return jsonify({'error': 'Error processing image'}), 500
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=10000, debug=False)

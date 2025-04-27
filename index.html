@@ -32,16 +32,17 @@
                 });
 
                 if (!response.ok) {
-                    throw new Error(`Error: ${response.status}`);
+                    throw new Error(`Error: ${response.status} - ${response.statusText}`);
                 }
 
                 const result = await response.json();
-                console.log(result); 
+                console.log(result);
                 document.getElementById('result').innerText = `Prediction: ${result.label}`;
             } catch (error) {
                 console.error('Error during prediction:', error);
-                document.getElementById('result').innerText = 'Error during prediction.';
+                document.getElementById('result').innerText = `Error during prediction: ${error.message}`;
             }
+
 
         }
     </script>
