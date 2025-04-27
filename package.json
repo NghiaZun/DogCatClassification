@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "form-data": "^4.0.2",
+    "fetch": "^2.0.0",
+    "other-dependencies": "version"
+  }
+}
