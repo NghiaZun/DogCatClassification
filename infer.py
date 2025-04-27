@@ -6,12 +6,21 @@ from PIL import Image
 import matplotlib.pyplot as plt
 import numpy as np
 from model_arch import CatDogClassifier
+from huggingface_hub import hf_hub_download
+
+# Tải mô hình từ Hugging Face
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+repo_id = "Gumangusi/CatDogClassifier"  # Thay bằng tên repo của bạn trên Hugging Face
+filename = "catdog_final.pth"  # Tên file mô hình đã upload
+
+# Tải file mô hình từ Hugging Face
+model_path = hf_hub_download(repo_id=repo_id, filename=filename)
 
 # Load lại model
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 model = CatDogClassifier(backbone_name='convnextv2_base.fcmae_ft_in22k_in1k', pretrained_backbone=False)
-model.load_state_dict(torch.load('catdog_final.pth', map_location=device))
+model.load_state_dict(torch.load(model_path, map_location=device))
 model = model.to(device)
 
 # Chuyển đổi ảnh trước khi đưa vào mô hình
@@ -55,5 +64,5 @@ def infer(image_path, model):
     plt.show()
 
 if __name__ == "__main__":
-    image_path = 'img/cho_4.jpg'  
+    image_path = 'img/meo_2.jpg'  
     infer(image_path, model)
