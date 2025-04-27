@@ -9,8 +9,6 @@ app = Flask(__name__)
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-# Lazy loading model
-model = None
 transform = transforms.Compose([
     transforms.Resize(256),
     transforms.CenterCrop(224),
@@ -26,6 +24,8 @@ model = CatDogClassifier(backbone_name='convnextv2_base.fcmae_ft_in22k_in1k', pr
 model.load_state_dict(torch.load(model_path, map_location=device), strict=False)
 model = model.to(device)
 model.eval()
+model = model.half()
+
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -35,7 +35,7 @@ def predict():
     
     try:
         img = Image.open(img_file.stream).convert('RGB')
-        img = transform(img).unsqueeze(0).to(device)
+        img = transform(img).unsqueeze(0).to(device).half()
 
         with torch.no_grad():
             output = model(img)
