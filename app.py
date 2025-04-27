@@ -34,8 +34,8 @@ def predict():
     img = transform(img).unsqueeze(0)
     with torch.no_grad():
         output = model(img)
-    _, predicted = torch.max(output, 1)
-    label = 'Cat' if predicted.item() == 0 else 'Dog'
+        pred = torch.sigmoid(output).item()
+        label = "Dog" if pred > 0.5 else "Cat"
     return jsonify({'label': label})
 
 if __name__ == '__main__':
