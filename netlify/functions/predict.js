@@ -1,52 +1,32 @@
-const apiUrl = process.env.MODEL_API_URL;  // URL của Flask server
-const apiKey = process.env.MODEL_API_KEY;  // API key nếu cần thiết
-const FormData = require('form-data');
+const fetch = require('node-fetch');
 
-exports.predict = async (event, context) => {
-    if (event.httpMethod !== 'POST') {
-        return {
-            statusCode: 405,
-            body: JSON.stringify({ error: 'Method Not Allowed' })
-        };
-    }
+exports.handler = async (event, context) => {
+  // URL của Cloud Run service
+  const cloudRunUrl = "https://<your-service-name>-<random-id>.run.app/predict";
+  
+  // Lấy hình ảnh từ yêu cầu
+  const formData = new FormData();
+  formData.append('image', event.body);  // Giả sử hình ảnh được gửi từ yêu cầu POST
 
-    if (!apiUrl) {
-        return {
-            statusCode: 500,
-            body: JSON.stringify({ error: 'API configuration is missing' })
-        };
-    }
+  try {
+    const response = await fetch(cloudRunUrl, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'Authorization': `Bearer <your-api-key-if-needed>`,
+      },
+    });
 
-    try {
-        const { image } = JSON.parse(event.body); // Expecting `image` in the request body
-        console.log("Incoming request body:", event.body); // log dữ liệu nhận được
-
-        const formData = new FormData();
-        formData.append('image', image);  // Đảm bảo dữ liệu gửi là file ảnh
-        
-        const response = await fetch(`${apiUrl}/predict`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${apiKey}`,
-            },
-            body: formData,
-        });
-
-        console.log("Flask API response:", response); // log toàn bộ response từ Flask API
-
-        if (!response.ok) {
-            throw new Error(`API responded with status ${response.status}`);
-        }
-
-        const data = await response.json();
-        return {
-            statusCode: 200,
-            body: JSON.stringify({ label: data.label })
-        };
-    } catch (error) {
-        return {
-            statusCode: 500,
-            body: JSON.stringify({ error: error.message || 'Internal Server Error' })
-        };
-    }
+    const data = await response.json();
+    
+    return {
+      statusCode: 200,
+      body: JSON.stringify(data),
+    };
+  } catch (error) {
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: error.message }),
+    };
+  }
 };
