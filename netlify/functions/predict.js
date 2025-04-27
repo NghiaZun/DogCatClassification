@@ -1,6 +1,5 @@
-const formData = require('form-data');
-const fetch = require('node-fetch');
-const { Buffer } = require('buffer');
+const apiUrl = process.env.MODEL_API_URL;
+const apiKey = process.env.MODEL_API_KEY;
 
 exports.handler = async (event, context) => {
     if (event.httpMethod !== 'POST') {
@@ -10,14 +9,13 @@ exports.handler = async (event, context) => {
         };
     }
 
-    const form = new formData();
-    const imageBuffer = Buffer.from(event.body, 'base64');
-    form.append('image', imageBuffer, { filename: 'image.jpg' });
-
     try {
-        const response = await fetch('https://yourbackendurl.onrender.com/predict', {
+        const response = await fetch(`${apiUrl}/predict`, {
             method: 'POST',
-            body: form,
+            headers: {
+                'Authorization': `Bearer ${apiKey}`
+            },
+            body: formData,
         });
         const data = await response.json();
         return {
