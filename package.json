@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "form-data": "^4.0.2",
-    "other-dependencies": "version"
+    "form-data": "^4.0.2"
   }
 }
