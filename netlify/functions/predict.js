@@ -2,7 +2,7 @@ const fetch = require('node-fetch');
 
 exports.handler = async (event, context) => {
   // URL của Cloud Run service
-  const cloudRunUrl = "https://<your-service-name>-<random-id>.run.app/predict";
+  const cloudRunUrl = "https://dogcatclassification-941016675334.us-central1.run.app/predict";
   
   // Lấy hình ảnh từ yêu cầu
   const formData = new FormData();
